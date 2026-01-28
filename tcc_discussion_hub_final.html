@@ -1553,10 +1553,7 @@
             </div>
 
             <div id="reminderBox" style="margin-top: 25px; padding: 20px; background: #fff3cd; border-radius: 10px;">
-                <strong style="color: #856404;">⏰ Reminder</strong>
-                <p style="font-size: 0.85em; color: #856404; margin-top: 8px;">
-                    Peer responses due in 2 days! You need 1 more reply to complete this milestone.
-                </p>
+                <!-- Dynamic content set by updateReminderBox() -->
             </div>
         </aside>
 
@@ -2705,6 +2702,77 @@
                     </div>
                 `;
             }).join('');
+            
+            // Update reminder box based on milestone status
+            updateReminderBox();
+        }
+
+        function updateReminderBox() {
+            const box = document.getElementById('reminderBox');
+            const topic = topics.find(t => t.id === currentTopicId);
+            
+            if (!topic || !topic.milestones || topic.milestones.length === 0) {
+                box.innerHTML = `
+                    <strong style="color: #0c5460;">💡 Getting Started</strong>
+                    <p style="font-size: 0.85em; color: #0c5460; margin-top: 8px;">
+                        Welcome! Read the discussion prompt above and share your thoughts.
+                    </p>
+                `;
+                box.style.background = '#d1ecf1';
+                return;
+            }
+            
+            // Find the next incomplete milestone
+            const now = new Date();
+            const incompleteMilestones = topic.milestones.filter(m => !m.completed);
+            
+            if (incompleteMilestones.length === 0) {
+                box.innerHTML = `
+                    <strong style="color: #155724;">🎉 All Complete!</strong>
+                    <p style="font-size: 0.85em; color: #155724; margin-top: 8px;">
+                        You've completed all milestones for this discussion. Great work!
+                    </p>
+                `;
+                box.style.background = '#d4edda';
+                return;
+            }
+            
+            const nextMilestone = incompleteMilestones[0];
+            const dueDate = new Date(nextMilestone.due);
+            const daysUntil = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+            
+            let message, urgency;
+            if (daysUntil < 0) {
+                message = `${nextMilestone.name} is overdue! Submit as soon as possible.`;
+                urgency = 'overdue';
+                box.style.background = '#f8d7da';
+            } else if (daysUntil === 0) {
+                message = `${nextMilestone.name} is due today! Don't forget to submit.`;
+                urgency = 'urgent';
+                box.style.background = '#fff3cd';
+            } else if (daysUntil <= 2) {
+                message = `${nextMilestone.name} is due in ${daysUntil} day${daysUntil > 1 ? 's' : ''}. Start working on it soon!`;
+                urgency = 'soon';
+                box.style.background = '#fff3cd';
+            } else {
+                message = `${nextMilestone.name} is due ${formatDate(nextMilestone.due)}. You have ${daysUntil} days remaining.`;
+                urgency = 'normal';
+                box.style.background = '#d1ecf1';
+            }
+            
+            const colors = {
+                overdue: '#721c24',
+                urgent: '#856404',
+                soon: '#856404',
+                normal: '#0c5460'
+            };
+            
+            box.innerHTML = `
+                <strong style="color: ${colors[urgency]};">⏰ ${urgency === 'overdue' ? 'Overdue' : 'Reminder'}</strong>
+                <p style="font-size: 0.85em; color: ${colors[urgency]}; margin-top: 8px;">
+                    ${message}
+                </p>
+            `;
         }
 
         function renderPosts() {
@@ -3087,7 +3155,16 @@
 
             post.replies.push(newReply);
             input.value = '';
+            
+            // Update topic reply count
+            const topic = topics.find(t => t.id === currentTopicId);
+            if (topic) {
+                topic.replies = (topic.replies || 0) + 1;
+            }
+            
             renderPosts();
+            renderTopicsList();
+            renderDiscussionHeader();
             
             setTimeout(() => {
                 document.getElementById(`replies-${postId}`).classList.add('show');
@@ -3180,8 +3257,14 @@
 
             posts.unshift(newPost);
             
+            // Update topic stats
             const topic = topics.find(t => t.id === currentTopicId);
             topic.posts++;
+            
+            // Update participant count (unique authors)
+            const topicPosts = posts.filter(p => p.topicId === currentTopicId);
+            const uniqueAuthors = new Set(topicPosts.map(p => p.author));
+            topic.participants = uniqueAuthors.size;
             
             document.getElementById('postContent').value = '';
             document.getElementById('attachmentPreview').innerHTML = '';
@@ -3190,6 +3273,7 @@
             
             renderPosts();
             renderTopicsList();
+            renderDiscussionHeader();
             showToast('✓ Post submitted successfully! Great work!', 'success');
         }
 
@@ -3491,24 +3575,30 @@
         }
 
         function addEditMilestone() {
-            const topic = topics.find(t => t.id === editingTopicId);
-            if (!topic.milestones) topic.milestones = [];
+            // Add a new row to the edit form (don't modify the actual topic until save)
+            const container = document.getElementById('editMilestonesList');
+            const currentRows = container.querySelectorAll('.milestone-row');
+            const newIndex = currentRows.length;
             
-            topic.milestones.push({
-                name: '',
-                due: '',
-                points: 0,
-                completed: false
-            });
-            
-            renderEditMilestones(topic.milestones);
+            const newRow = document.createElement('div');
+            newRow.className = 'milestone-row';
+            newRow.dataset.index = newIndex;
+            newRow.style.cssText = 'display: grid; grid-template-columns: 1fr 150px 80px 40px; gap: 10px; margin-bottom: 10px; align-items: center;';
+            newRow.innerHTML = `
+                <input type="text" value="" placeholder="Milestone name" class="edit-milestone-name" style="padding: 10px; border: 2px solid var(--gray-200); border-radius: 8px; font-family: Georgia, serif;">
+                <input type="date" value="" class="edit-milestone-date" style="padding: 10px; border: 2px solid var(--gray-200); border-radius: 8px; font-family: Georgia, serif;">
+                <input type="number" value="20" placeholder="Pts" class="edit-milestone-points" style="padding: 10px; border: 2px solid var(--gray-200); border-radius: 8px; font-family: Georgia, serif;">
+                <button onclick="this.parentElement.remove()" style="background: var(--danger); color: white; border: none; padding: 8px; border-radius: 8px; cursor: pointer;">✕</button>
+            `;
+            container.appendChild(newRow);
         }
 
         function removeEditMilestone(index) {
-            const topic = topics.find(t => t.id === editingTopicId);
-            if (topic && topic.milestones) {
-                topic.milestones.splice(index, 1);
-                renderEditMilestones(topic.milestones);
+            // Remove the row from the edit form (don't modify the actual topic until save)
+            const container = document.getElementById('editMilestonesList');
+            const rows = container.querySelectorAll('.milestone-row');
+            if (rows[index]) {
+                rows[index].remove();
             }
         }
 
