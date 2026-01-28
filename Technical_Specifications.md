@@ -479,6 +479,70 @@ All API endpoints require valid session established via LTI launch.
 |--------|----------|-------------|
 | POST | `/api/upload` | Upload file attachment |
 
+#### Academic Integrity (Instructor)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/posts/:id/integrity` | Get integrity analysis for post |
+| POST | `/api/posts/:id/integrity/deep` | Run AI-powered deep analysis |
+
+### 5.3 Academic Integrity System
+
+The Discussion Hub includes a comprehensive built-in academic integrity checker with 19 detection methods:
+
+#### Heuristic Analysis (Client-Side)
+
+**AI Writing Detection:**
+1. Sentence length uniformity — AI tends to write more uniformly than humans
+2. AI phrase detection — Identifies common AI-generated phrases ("it is important to note", etc.)
+3. Paragraph structure uniformity — Checks for suspiciously uniform paragraph lengths
+4. Hedging language analysis — Detects excessive hedging typical of AI
+5. Transition word overuse — AI overuses words like "however", "furthermore", "moreover"
+6. Overly formal style — Detects absence of contractions with no personal voice
+
+**Copied Content Detection:**
+7. Repetitive phrase detection — Catches choruses/verses repeated 3+ times
+8. Known lyrics indicators — Detects "la-da", "na na", famous song phrases
+9. Poetic structure analysis — Many short phrases typical of lyrics/poetry
+10. Rhetorical questions — Multiple questions without analytical discussion
+
+**Academic Standards:**
+11. Analytical language check — Presence of "because", "therefore", "for example"
+12. Personal voice markers — "I think", "I believe", "in my opinion"
+13. Topic relevance scoring — Keyword overlap with discussion prompt
+14. Citation detection — Checks for proper source attribution
+
+**Plagiarism Detection:**
+15. Same-class similarity — N-gram comparison across all posts in discussion
+16. Self-plagiarism — Compares against student's own posts in other topics
+17. Essay mill indicators — Detects academic paper formatting phrases
+
+**Writing Quality Metrics:**
+18. Lexical diversity (TTR) — Type-token ratio analysis
+19. Vocabulary sophistication — Unusually advanced academic terms
+
+#### Deep Analysis (Optional Claude API)
+- AI-powered content analysis for sophisticated detection
+- Returns confidence score, identified indicators, and recommendations
+- Instructor-only access with appropriate disclaimers
+
+#### Web Plagiarism Search (Optional Claude API)
+- Searches the internet for copied content using Claude's web search
+- Detects Wikipedia, news articles, blog posts, and other online sources
+- Returns source URLs, match confidence, and matched text excerpts
+- Falls back to manual search links (Google, Wikipedia) if API unavailable
+
+#### Risk Scoring
+| Risk Level | Criteria |
+|------------|----------|
+| Low (✓ Clear) | Risk score <35%, similarity <30% |
+| Medium (⚡ Review) | Risk score 35-60% OR similarity 30-50% |
+| High (⚠️ Flagged) | Risk score >60% OR similarity >50% |
+
+#### Report Export
+- Individual post reports (downloadable .txt)
+- Batch summary reports with all flagged posts
+- CSV-formatted student summary for grade import
+
 ---
 
 ## 6. Security Specifications

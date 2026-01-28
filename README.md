@@ -36,9 +36,43 @@
 | 📈 **Analytics Dashboard** | Real-time participation and engagement metrics |
 | 👥 **Student Progress** | Track individual student completion and grades |
 | 🤖 **Auto-Grading** | Configurable automatic grade calculation |
+| 🔍 **AI/Plagiarism Check** | Built-in academic integrity analysis for every post |
 | 📜 **Edit History** | View complete revision history for any post |
 | 📥 **Grade Export** | Export grades to CSV for Canvas import |
 | 🔔 **Notifications** | Deadline reminders and at-risk student alerts |
+
+---
+
+## 🔍 Academic Integrity Checker
+
+A comprehensive built-in tool to help instructors identify potentially problematic submissions.
+
+### Detection Methods (19 Total)
+| Category | Checks | Description |
+|----------|--------|-------------|
+| **AI Writing** | Sentence uniformity, AI phrases, paragraph structure, hedging language, transition overuse, formal style | Detects patterns typical of AI-generated content |
+| **Copied Content** | Repeated phrases, known lyrics, poetic structure, rhetorical questions | Catches song lyrics, poems, and copy-pasted content |
+| **Academic Standards** | Analytical language, personal voice, topic relevance, citations | Ensures submissions meet discussion expectations |
+| **Plagiarism** | Same-class similarity, self-plagiarism, essay mill indicators | Compares against other posts and detects purchased content |
+| **Writing Quality** | Lexical diversity, vocabulary sophistication, list usage | Analyzes writing characteristics |
+
+### Features
+- **🔍 One-Click Analysis** - Check any post instantly with 19 heuristic checks
+- **📊 Batch Processing** - "Check All Posts" analyzes entire discussion
+- **🎯 Risk Scoring** - Posts rated as Clear (✓), Review (⚡), or Flagged (⚠️)
+- **🌐 Web Plagiarism Check** - Search the internet for copied content (Wikipedia, articles, etc.)
+- **📄 Export Reports** - Download individual or summary reports
+- **🔬 Deep Analysis** - Optional Claude API integration for AI-powered analysis
+- **📈 Metrics Dashboard** - View detailed stats like lexical diversity, topic relevance
+
+### Risk Levels
+| Level | Score | Action |
+|-------|-------|--------|
+| ✅ Low Risk | <35% | No action needed |
+| ⚠️ Medium Risk | 35-60% | Review recommended |
+| 🚨 High Risk | >60% | Review required |
+
+> ⚠️ **Important:** This tool uses heuristics and is not definitive. Always use professional judgment and speak with students before making academic integrity decisions.
 
 ---
 
