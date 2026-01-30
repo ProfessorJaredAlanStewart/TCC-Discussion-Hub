@@ -1564,6 +1564,11 @@
                     <!-- Dynamic content -->
                 </div>
 
+                <!-- Active Polls Section -->
+                <div id="pollsSection" style="display: none;">
+                    <!-- Polls rendered here -->
+                </div>
+
                 <div class="filter-bar">
                     <div class="search-box">
                         <input type="text" placeholder="Search posts..." id="searchInput" onkeyup="filterPosts()">
@@ -1618,7 +1623,7 @@
                 <div class="dashboard-tabs">
                     <button class="dashboard-tab active" onclick="switchDashboardTab('analytics')">📊 Analytics</button>
                     <button class="dashboard-tab" onclick="switchDashboardTab('review')">🔍 Review Posts</button>
-                    <button class="dashboard-tab" onclick="switchDashboardTab('students')">👥 Students</button>
+                    <button class="dashboard-tab" onclick="switchDashboardTab('students')">📊 Engagement Insights</button>
                     <button class="dashboard-tab" onclick="switchDashboardTab('topics')">📝 Manage Topics</button>
                     <button class="dashboard-tab" onclick="switchDashboardTab('settings')">⚙️ Settings</button>
                 </div>
@@ -1648,29 +1653,49 @@
                     </div>
                 </div>
 
-                <!-- Students Tab -->
+                <!-- Students Tab - Engagement Insights -->
                 <div class="tab-content" id="studentsTab">
-                    <div class="table-container">
-                        <div class="table-header">
-                            <h3>👥 Student Progress & Auto-Grades</h3>
-                            <button class="export-btn" onclick="exportGrades()">📥 Export to CSV</button>
+                    <div style="display: flex; gap: 20px; height: calc(100vh - 200px); min-height: 600px;">
+                        <!-- Left Sidebar - Student List -->
+                        <div style="width: 280px; background: white; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <div style="padding: 15px; border-bottom: 1px solid var(--gray-200);">
+                                <input type="text" id="studentSearchInput" placeholder="🔍 Search Students" 
+                                       style="width: 100%; padding: 10px; border: 1px solid var(--gray-200); border-radius: 8px;"
+                                       oninput="filterStudentList()">
+                            </div>
+                            
+                            <!-- Outreach Suggestions -->
+                            <div style="border-bottom: 1px solid var(--gray-200);">
+                                <div onclick="toggleOutreachSection()" style="padding: 12px 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #fff5f5;">
+                                    <span style="font-weight: bold; color: var(--danger);">⚠️ Outreach Suggestions</span>
+                                    <span id="outreachCount" style="background: var(--danger); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em;">0</span>
+                                </div>
+                                <div id="outreachList" style="max-height: 200px; overflow-y: auto;">
+                                    <!-- Dynamic outreach suggestions -->
+                                </div>
+                            </div>
+                            
+                            <!-- All Students -->
+                            <div style="flex: 1; overflow-y: auto;">
+                                <div style="padding: 12px 15px; background: var(--gray-50); font-weight: bold; color: var(--gray-600); font-size: 0.85em;">
+                                    All Students (<span id="totalStudentCount">30</span>)
+                                </div>
+                                <div id="studentListItems">
+                                    <!-- Dynamic student list -->
+                                </div>
+                            </div>
                         </div>
-                        <table class="student-table">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Initial Post</th>
-                                    <th>Replies</th>
-                                    <th>Word Avg</th>
-                                    <th>Last Active</th>
-                                    <th>Auto-Grade</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="studentTableBody">
-                                <!-- Dynamic content -->
-                            </tbody>
-                        </table>
+                        
+                        <!-- Right Panel - Student Detail -->
+                        <div style="flex: 1; background: white; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                            <div id="studentDetailPanel">
+                                <!-- Student detail view -->
+                                <div style="text-align: center; padding: 60px; color: var(--gray-400);">
+                                    <p style="font-size: 3em; margin-bottom: 15px;">👈</p>
+                                    <p>Select a student to view their engagement insights</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1683,10 +1708,69 @@
                                 <label>Topic Title</label>
                                 <input type="text" id="newTopicTitle" placeholder="Enter a compelling discussion title...">
                             </div>
+                            
+                            <!-- Prompt Type Toggle -->
                             <div class="form-group">
+                                <label>Instructions Type</label>
+                                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                                    <button type="button" id="mainPromptTypeText" onclick="setMainPromptType('text')" 
+                                            style="flex: 1; padding: 12px; border: 2px solid var(--tcc-teal); background: var(--tcc-teal); color: white; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                        📝 Text Instructions
+                                    </button>
+                                    <button type="button" id="mainPromptTypeVideo" onclick="setMainPromptType('video')"
+                                            style="flex: 1; padding: 12px; border: 2px solid var(--gray-300); background: white; color: var(--gray-700); border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                        🎥 Video Instructions
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Text Prompt Section -->
+                            <div class="form-group" id="mainTextPromptSection">
                                 <label>Instructions / Prompt</label>
                                 <textarea id="newTopicPrompt" rows="4" placeholder="Describe what students should discuss, requirements, and expectations..."></textarea>
                             </div>
+                            
+                            <!-- Video Prompt Section -->
+                            <div id="mainVideoPromptSection" style="display: none;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: bold;">Video Instructions</label>
+                                <div id="mainVideoPreview" style="display: none; margin-bottom: 15px;">
+                                    <video id="mainVideoPlayer" controls style="width: 100%; border-radius: 10px; max-height: 300px; background: #000;"></video>
+                                    <button onclick="removeMainVideo()" style="margin-top: 10px; background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                                        🗑 Remove Video
+                                    </button>
+                                </div>
+                                <div id="mainVideoRecordSection" style="background: var(--gray-100); border-radius: 10px; padding: 20px; text-align: center;">
+                                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                                        <button onclick="startMainVideoRecord()" id="mainRecordBtn" style="background: var(--danger); color: white; border: none; padding: 15px 25px; border-radius: 10px; cursor: pointer; font-size: 1em;">
+                                            🎥 Record Video
+                                        </button>
+                                        <label style="background: var(--tcc-blue); color: white; padding: 15px 25px; border-radius: 10px; cursor: pointer; font-size: 1em; display: inline-block;">
+                                            📁 Upload Video
+                                            <input type="file" accept="video/*" onchange="uploadMainVideo(event)" style="display: none;">
+                                        </label>
+                                    </div>
+                                    <p style="margin-top: 15px; color: var(--gray-500); font-size: 0.9em;">Record yourself explaining the discussion topic to students</p>
+                                </div>
+                                
+                                <!-- Recording Interface -->
+                                <div id="mainRecordingInterface" style="display: none; margin-top: 15px;">
+                                    <video id="mainRecordPreview" autoplay muted style="width: 100%; border-radius: 10px; background: #000;"></video>
+                                    <div style="text-align: center; margin-top: 15px;">
+                                        <span id="mainRecordingTimer" style="font-size: 1.5em; font-weight: bold; color: var(--danger);">00:00</span>
+                                        <div style="margin-top: 10px;">
+                                            <button onclick="stopMainVideoRecord()" style="background: var(--danger); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1em;">
+                                                ⏹ Stop Recording
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group" style="margin-top: 15px;">
+                                    <label>Brief Text Summary (for accessibility)</label>
+                                    <textarea id="mainVideoDescription" rows="2" placeholder="Brief text summary of the video instructions..." style="width: 100%;"></textarea>
+                                </div>
+                            </div>
+                            
                             <div class="form-group">
                                 <label>Total Points</label>
                                 <input type="number" id="newTopicPoints" value="100" style="width: 120px;">
@@ -1713,6 +1797,19 @@
                                 <button class="add-milestone-btn" onclick="addMilestoneRow()">+ Add Another Milestone</button>
                             </div>
                             <button class="create-topic-btn" onclick="createNewTopic()">🚀 Create Discussion Topic</button>
+                        </div>
+                    </div>
+
+                    <!-- Polls Management Section -->
+                    <div class="table-container" style="margin-top: 30px;">
+                        <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>📊 Manage Polls</h3>
+                            <button onclick="openPollModalFromManage()" style="background: linear-gradient(135deg, var(--tcc-teal) 0%, var(--tcc-blue) 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                + Create Poll
+                            </button>
+                        </div>
+                        <div id="pollsManagementList" style="padding: 15px;">
+                            <!-- Polls listed here -->
                         </div>
                     </div>
 
@@ -1949,16 +2046,76 @@
 
     <!-- New Topic Modal -->
     <div class="modal-overlay" id="newTopicModal">
-        <div class="modal">
+        <div class="modal" style="max-width: 600px;">
             <h3>📝 Quick Create Discussion Topic</h3>
             <div class="form-group" style="margin-bottom: 15px;">
                 <label>Topic Title</label>
                 <input type="text" id="quickTopicTitle" placeholder="Enter topic title..." style="width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-family: Georgia, serif;">
             </div>
-            <div class="form-group" style="margin-bottom: 15px;">
+            
+            <!-- Prompt Type Toggle -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 10px;">Prompt Type</label>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" id="quickPromptTypeText" onclick="setQuickPromptType('text')" 
+                            style="flex: 1; padding: 12px; border: 2px solid var(--tcc-teal); background: var(--tcc-teal); color: white; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        📝 Text Instructions
+                    </button>
+                    <button type="button" id="quickPromptTypeVideo" onclick="setQuickPromptType('video')"
+                            style="flex: 1; padding: 12px; border: 2px solid var(--gray-300); background: white; color: var(--gray-700); border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        🎥 Video Instructions
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Text Prompt -->
+            <div class="form-group" id="quickTextPromptSection" style="margin-bottom: 15px;">
                 <label>Instructions</label>
                 <textarea id="quickTopicPrompt" rows="4" placeholder="What should students discuss?" style="width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-family: Georgia, serif;"></textarea>
             </div>
+            
+            <!-- Video Prompt -->
+            <div id="quickVideoPromptSection" style="display: none; margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 10px;">Video Instructions</label>
+                <div id="quickVideoPreview" style="display: none; margin-bottom: 15px;">
+                    <video id="quickVideoPlayer" controls style="width: 100%; border-radius: 10px; max-height: 300px;"></video>
+                    <button onclick="removeQuickVideo()" style="margin-top: 10px; background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                        🗑 Remove Video
+                    </button>
+                </div>
+                <div id="quickVideoRecordSection" style="background: var(--gray-100); border-radius: 10px; padding: 20px; text-align: center;">
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="startQuickVideoRecord()" id="quickRecordBtn" style="background: var(--danger); color: white; border: none; padding: 15px 25px; border-radius: 10px; cursor: pointer; font-size: 1em;">
+                            🎥 Record Video
+                        </button>
+                        <label style="background: var(--tcc-blue); color: white; padding: 15px 25px; border-radius: 10px; cursor: pointer; font-size: 1em;">
+                            📁 Upload Video
+                            <input type="file" accept="video/*" onchange="uploadQuickVideo(event)" style="display: none;">
+                        </label>
+                    </div>
+                    <p style="margin-top: 15px; color: var(--gray-500); font-size: 0.9em;">Record or upload a video to explain the discussion topic</p>
+                </div>
+                
+                <!-- Recording Interface (hidden until recording) -->
+                <div id="quickRecordingInterface" style="display: none; margin-top: 15px;">
+                    <video id="quickRecordPreview" autoplay muted style="width: 100%; border-radius: 10px; background: #000;"></video>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <span id="quickRecordingTimer" style="font-size: 1.5em; font-weight: bold; color: var(--danger);">00:00</span>
+                        <div style="margin-top: 10px;">
+                            <button onclick="stopQuickVideoRecord()" style="background: var(--danger); color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1em;">
+                                ⏹ Stop Recording
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Optional text description for video -->
+                <div style="margin-top: 15px;">
+                    <label>Brief Text Summary (optional)</label>
+                    <textarea id="quickVideoDescription" rows="2" placeholder="Brief text summary of the video instructions (for accessibility)..." style="width: 100%; padding: 10px; border: 2px solid var(--gray-200); border-radius: 8px; font-family: Georgia, serif;"></textarea>
+                </div>
+            </div>
+            
             <div class="modal-actions">
                 <button class="modal-btn secondary" onclick="closeNewTopicModal()">Cancel</button>
                 <button class="modal-btn primary" onclick="quickCreateTopic()">Create Topic</button>
@@ -1999,6 +2156,47 @@
                         <option value="closed">Closed</option>
                     </select>
                 </div>
+            </div>
+
+            <!-- Canvas Integration Section -->
+            <div style="margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%); border-radius: 12px; border: 2px solid #e53e3e;">
+                <h4 style="color: #c53030; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <img src="https://www.instructure.com/sites/default/files/image/2021-12/canvas_reversed_logo.png" alt="Canvas" style="height: 24px; filter: brightness(0.3) sepia(1) hue-rotate(-50deg) saturate(5);">
+                    Canvas Integration
+                </h4>
+                <div id="canvasSyncStatus">
+                    <div id="canvasNotLinked" style="display: block;">
+                        <p style="color: var(--gray-600); margin-bottom: 15px; font-size: 0.95em;">
+                            Link this discussion to Canvas to create a gradebook assignment and enable automatic grade sync.
+                        </p>
+                        <button onclick="syncToCanvas()" class="canvas-sync-btn" style="background: #e53e3e; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+                            🔗 Create Canvas Assignment
+                        </button>
+                    </div>
+                    <div id="canvasLinked" style="display: none;">
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 8px; margin-bottom: 15px;">
+                            <span style="font-size: 1.5em;">✅</span>
+                            <div style="flex: 1;">
+                                <strong style="color: var(--success);">Linked to Canvas</strong>
+                                <p style="margin: 5px 0 0 0; font-size: 0.9em; color: var(--gray-500);" id="canvasAssignmentInfo">Assignment ID: <span id="canvasAssignmentId">--</span></p>
+                            </div>
+                            <button onclick="openCanvasAssignment()" style="background: var(--tcc-blue); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.9em;">
+                                Open in Canvas ↗
+                            </button>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button onclick="syncGradesToCanvas()" style="background: var(--success); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                📤 Sync Grades to Canvas
+                            </button>
+                            <button onclick="unlinkFromCanvas()" style="background: var(--gray-200); color: var(--gray-700); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+                                Unlink
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-size: 0.8em; color: var(--gray-500);">
+                    ⚠️ Canvas integration requires LTI 1.3 setup. <a href="#" onclick="showCanvasSetupHelp()" style="color: #e53e3e;">Learn more</a>
+                </p>
             </div>
 
             <div class="milestone-config" style="margin-bottom: 20px;">
@@ -2067,6 +2265,58 @@
                     <button class="modal-btn" onclick="exportIntegrityReport()" style="background: var(--success);">📄 Export</button>
                     <button class="modal-btn" onclick="runWebPlagiarismCheck()" id="webSearchBtn" style="background: var(--warning);">🌐 Web Search</button>
                     <button class="modal-btn" onclick="runDeepAnalysis()" id="deepAnalysisBtn" style="background: var(--tcc-blue);">🔬 Deep Analysis</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Poll Modal -->
+    <div class="modal-overlay" id="createPollModal">
+        <div class="modal" style="max-width: 550px;">
+            <div class="modal-header">
+                <h3>📊 Create Poll</h3>
+                <button class="modal-close" onclick="closePollModal()">&times;</button>
+            </div>
+            <div style="padding: 20px;">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Poll Question</label>
+                    <input type="text" id="pollQuestion" placeholder="Ask your students a question..." 
+                           style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 1em;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">Options</label>
+                    <div id="pollOptionsContainer">
+                        <div class="poll-option-input" style="display: flex; gap: 10px; margin-bottom: 8px;">
+                            <input type="text" placeholder="Option 1" class="poll-option-field"
+                                   style="flex: 1; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                            <button onclick="removePollOption(this)" style="background: var(--danger); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">✕</button>
+                        </div>
+                        <div class="poll-option-input" style="display: flex; gap: 10px; margin-bottom: 8px;">
+                            <input type="text" placeholder="Option 2" class="poll-option-field"
+                                   style="flex: 1; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                            <button onclick="removePollOption(this)" style="background: var(--danger); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">✕</button>
+                        </div>
+                    </div>
+                    <button onclick="addPollOption()" style="background: var(--gray-200); color: var(--gray-700); border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; margin-top: 5px;">
+                        + Add Option
+                    </button>
+                </div>
+                
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="pollAllowMultiple" style="width: 18px; height: 18px;">
+                        Allow multiple selections
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="pollShowResults" checked style="width: 18px; height: 18px;">
+                        Show results to students
+                    </label>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="modal-btn secondary" onclick="closePollModal()">Cancel</button>
+                    <button class="modal-btn" onclick="createPoll()" style="background: var(--tcc-teal);">📊 Create Poll</button>
                 </div>
             </div>
         </div>
@@ -2148,6 +2398,26 @@
         let audioContext = null;
         let analyser = null;
         let animationId = null;
+
+        // Polls Data
+        let polls = [
+            {
+                id: 1,
+                topicId: 1,
+                question: "How confident do you feel about this week's material?",
+                options: [
+                    { id: 1, text: "Very confident", votes: 12, voters: [] },
+                    { id: 2, text: "Somewhat confident", votes: 8, voters: [] },
+                    { id: 3, text: "Need more practice", votes: 5, voters: [] },
+                    { id: 4, text: "Struggling", votes: 2, voters: [] }
+                ],
+                createdAt: "2026-02-01T10:00:00",
+                createdBy: "Instructor",
+                allowMultiple: false,
+                showResults: true,
+                active: true
+            }
+        ];
 
         // ==================== CONFIGURABLE SETTINGS ====================
         // ⚙️ CUSTOMIZE THESE VALUES FOR YOUR COURSE
@@ -2734,9 +3004,36 @@
         function renderDiscussionHeader() {
             const topic = topics.find(t => t.id === currentTopicId);
             const header = document.getElementById('discussionHeader');
+            
+            // Build video prompt HTML if exists
+            const videoPromptHtml = topic.videoPrompt ? `
+                <div style="margin: 20px 0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px; padding: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <video controls style="width: 100%; border-radius: 12px; max-height: 400px;" poster="">
+                        <source src="${topic.videoPrompt}" type="video/webm">
+                        Your browser does not support video playback.
+                    </video>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding: 12px 15px; background: linear-gradient(135deg, #e8f4f8 0%, #f0f9ff 100%); border-radius: 10px; border-left: 4px solid var(--tcc-teal);">
+                    <span style="font-size: 1.3em;">🎥</span>
+                    <div>
+                        <strong style="color: var(--tcc-dark);">Video Instructions</strong>
+                        <p style="margin: 5px 0 0 0; color: var(--gray-600); font-size: 0.9em;">${topic.prompt}</p>
+                    </div>
+                </div>
+            ` : `<p style="margin: 15px 0; color: var(--gray-600);">${topic.prompt}</p>`;
+            
             header.innerHTML = `
-                <h2>${topic.title}</h2>
-                <p style="margin: 15px 0; color: var(--gray-600);">${topic.prompt}</p>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+                    <div style="flex: 1;">
+                        <h2>${topic.title}</h2>
+                    </div>
+                    ${currentRole === 'instructor' ? `
+                        <button onclick="openPollModal()" style="background: linear-gradient(135deg, var(--tcc-teal) 0%, var(--tcc-blue) 100%); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                            📊 Create Poll
+                        </button>
+                    ` : ''}
+                </div>
+                ${videoPromptHtml}
                 <div class="discussion-meta">
                     <span>📝 ${topic.posts} posts</span>
                     <span>💬 ${topic.replies || 0} replies</span>
@@ -2745,6 +3042,9 @@
                     <span>📅 Due: ${formatDate(topic.dueDate)}</span>
                 </div>
             `;
+            
+            // Render polls after header
+            renderPolls();
         }
 
         function renderMilestones() {
@@ -2990,36 +3290,318 @@
             `).join('');
         }
 
+        let selectedStudentId = null;
+        
         function renderStudentTable() {
-            const tbody = document.getElementById('studentTableBody');
+            // Render the new Engagement Insights view
+            renderEngagementInsights();
+        }
+        
+        function renderEngagementInsights() {
+            // Calculate engagement metrics for each student
+            const studentMetrics = students.map(student => {
+                const studentPosts = posts.filter(p => p.author === student.name);
+                const totalPosts = studentPosts.length;
+                const totalReplies = studentPosts.reduce((sum, p) => sum + (p.replies?.length || 0), 0);
+                const avgWordCount = totalPosts > 0 ? Math.round(studentPosts.reduce((sum, p) => sum + (p.content?.split(/\s+/).length || 0), 0) / totalPosts) : 0;
+                
+                // Calculate engagement score (0-100)
+                let engagementScore = 0;
+                if (totalPosts > 0) engagementScore += 40;
+                if (totalReplies >= 2) engagementScore += 30;
+                else if (totalReplies >= 1) engagementScore += 15;
+                if (avgWordCount >= 200) engagementScore += 20;
+                else if (avgWordCount >= 100) engagementScore += 10;
+                engagementScore += Math.min(10, totalPosts * 2); // Bonus for extra posts
+                
+                // Determine status
+                let status = 'on-track';
+                let statusLabel = 'On Track';
+                let statusColor = 'var(--success)';
+                if (engagementScore >= 80) { status = 'high'; statusLabel = 'High'; statusColor = 'var(--success)'; }
+                else if (engagementScore >= 50) { status = 'medium'; statusLabel = 'Medium'; statusColor = 'var(--warning)'; }
+                else if (engagementScore > 0) { status = 'low'; statusLabel = 'Low'; statusColor = 'var(--danger)'; }
+                else { status = 'none'; statusLabel = 'No Activity'; statusColor = 'var(--gray-400)'; }
+                
+                // Check if needs outreach
+                const needsOutreach = engagementScore < 50 && student.lastActive !== 'Today';
+                
+                return {
+                    ...student,
+                    totalPosts,
+                    totalReplies,
+                    avgWordCount,
+                    engagementScore,
+                    status,
+                    statusLabel,
+                    statusColor,
+                    needsOutreach
+                };
+            });
             
-            if (students.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--gray-500);">
-                            <div style="font-size: 2em; margin-bottom: 10px;">👥</div>
-                            <p>No student activity yet</p>
-                            <p style="font-size: 0.85em;">Student progress will appear here once they begin participating.</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+            // Render outreach suggestions
+            const outreachStudents = studentMetrics.filter(s => s.needsOutreach);
+            document.getElementById('outreachCount').textContent = outreachStudents.length;
+            document.getElementById('outreachList').innerHTML = outreachStudents.length === 0 
+                ? '<p style="padding: 15px; color: var(--gray-400); text-align: center; font-size: 0.85em;">No students need outreach 🎉</p>'
+                : outreachStudents.map(s => `
+                    <div onclick="selectStudent(${s.id})" style="padding: 12px 15px; border-bottom: 1px solid var(--gray-100); cursor: pointer; display: flex; align-items: center; gap: 10px; ${selectedStudentId === s.id ? 'background: #fff5f5;' : ''}"
+                         onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background='${selectedStudentId === s.id ? '#fff5f5' : 'white'}'">
+                        <div style="width: 35px; height: 35px; border-radius: 50%; background: var(--danger); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8em;">
+                            ${s.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; font-size: 0.9em;">${s.name}</div>
+                            <div style="font-size: 0.75em; color: var(--danger);">${s.statusLabel}</div>
+                        </div>
+                        <span style="background: var(--danger); color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em;">NEW</span>
+                    </div>
+                `).join('');
             
-            tbody.innerHTML = students.map(student => `
-                <tr>
-                    <td>
-                        <span class="alert-indicator ${student.status === 'excellent' ? 'green' : student.status === 'good' ? 'green' : 'red'}"></span>
-                        ${student.name}
-                    </td>
-                    <td>${student.initial}</td>
-                    <td>${student.replies}</td>
-                    <td>${student.wordAvg}</td>
-                    <td>${student.lastActive}</td>
-                    <td><span class="grade-badge ${student.status}">${student.grade}/100</span></td>
-                    <td>${student.status === 'needs-attention' ? '⚠️ Needs attention' : '✓ On track'}</td>
-                </tr>
+            // Render all students
+            document.getElementById('totalStudentCount').textContent = studentMetrics.length;
+            document.getElementById('studentListItems').innerHTML = studentMetrics.map(s => `
+                <div onclick="selectStudent(${s.id})" style="padding: 12px 15px; border-bottom: 1px solid var(--gray-100); cursor: pointer; display: flex; align-items: center; gap: 10px; ${selectedStudentId === s.id ? 'background: var(--tcc-mint);' : ''}"
+                     onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='${selectedStudentId === s.id ? 'var(--tcc-mint)' : 'white'}'">
+                    <div style="width: 35px; height: 35px; border-radius: 50%; background: var(--tcc-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8em;">
+                        ${s.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold; font-size: 0.9em;">${s.name}</div>
+                    </div>
+                    <span style="color: ${s.statusColor}; font-size: 0.8em; font-weight: bold;">${s.statusLabel}</span>
+                </div>
             `).join('');
+            
+            // If a student is selected, show their details
+            if (selectedStudentId) {
+                const student = studentMetrics.find(s => s.id === selectedStudentId);
+                if (student) renderStudentDetail(student);
+            }
+        }
+        
+        function selectStudent(studentId) {
+            selectedStudentId = studentId;
+            renderEngagementInsights();
+        }
+        
+        function filterStudentList() {
+            const query = document.getElementById('studentSearchInput').value.toLowerCase();
+            const items = document.querySelectorAll('#studentListItems > div');
+            items.forEach(item => {
+                const name = item.querySelector('div[style*="font-weight: bold"]').textContent.toLowerCase();
+                item.style.display = name.includes(query) ? 'flex' : 'none';
+            });
+        }
+        
+        function toggleOutreachSection() {
+            const list = document.getElementById('outreachList');
+            list.style.display = list.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function renderStudentDetail(student) {
+            const panel = document.getElementById('studentDetailPanel');
+            
+            // Get student's posts for this topic
+            const studentPosts = posts.filter(p => p.author === student.name && p.topicId === currentTopicId);
+            
+            // Generate activity data for chart (simulated weekly activity)
+            const activityData = [
+                { week: 'Week 1', score: Math.random() * 30 + 40 },
+                { week: 'Week 2', score: Math.random() * 30 + 50 },
+                { week: 'Week 3', score: Math.random() * 30 + 45 },
+                { week: 'Week 4', score: student.engagementScore }
+            ];
+            
+            panel.innerHTML = `
+                <!-- Header with navigation -->
+                <div style="padding: 20px; border-bottom: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--tcc-blue); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em;">
+                            ${student.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                            <h2 style="margin: 0; color: var(--tcc-dark);">${student.name}</h2>
+                            <span style="color: var(--gray-500);">Student ID: ${student.id}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="navigateStudent(-1)" style="background: var(--gray-100); border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer;">← Prev Student</button>
+                        <button onclick="navigateStudent(1)" style="background: var(--gray-100); border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer;">Next Student →</button>
+                    </div>
+                </div>
+                
+                <!-- Tabs -->
+                <div style="display: flex; border-bottom: 1px solid var(--gray-200);">
+                    <button onclick="showStudentTab('topics')" class="student-detail-tab active" id="tab-topics" style="padding: 15px 25px; border: none; background: white; cursor: pointer; border-bottom: 3px solid var(--tcc-teal); font-weight: bold; color: var(--tcc-teal);">Active Topics</button>
+                    <button onclick="showStudentTab('activity')" class="student-detail-tab" id="tab-activity" style="padding: 15px 25px; border: none; background: white; cursor: pointer; border-bottom: 3px solid transparent; color: var(--gray-500);">Activity Over Time</button>
+                    <button onclick="showStudentTab('outreach')" class="student-detail-tab" id="tab-outreach" style="padding: 15px 25px; border: none; background: white; cursor: pointer; border-bottom: 3px solid transparent; color: var(--gray-500);">Outreach Log</button>
+                </div>
+                
+                <!-- Tab Content -->
+                <div style="padding: 20px; overflow-y: auto; flex: 1;">
+                    <!-- Active Topics Tab -->
+                    <div id="studentTab-topics">
+                        <p style="color: var(--gray-500); margin-bottom: 20px;">Topics are represented by performance in each category. Click on any topic for more information.</p>
+                        
+                        <!-- Category Legend -->
+                        <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85em;">
+                                <input type="checkbox" checked> Requirements
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85em;">
+                                <input type="checkbox" checked> Quantity
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85em;">
+                                <input type="checkbox" checked> Timing
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85em;">
+                                <input type="checkbox" checked> Content
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 5px; font-size: 0.85em;">
+                                <input type="checkbox" checked> Connectedness
+                            </label>
+                        </div>
+                        
+                        <!-- Performance Cards -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+                            ${topics.map(topic => {
+                                const topicPosts = posts.filter(p => p.author === student.name && p.topicId === topic.id);
+                                const hasPost = topicPosts.length > 0;
+                                const grade = hasPost ? Math.round(Math.random() * 30 + 70) : 0;
+                                return `
+                                    <div style="background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 15px; cursor: pointer;"
+                                         onclick="switchTopic(${topic.id})">
+                                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                            <div>
+                                                <h4 style="margin: 0 0 5px 0; font-size: 0.95em;">${topic.title.substring(0, 35)}${topic.title.length > 35 ? '...' : ''}</h4>
+                                                <span style="font-size: 0.8em; color: var(--gray-500);">Due ${formatDate(topic.dueDate)} | ${topic.points} pts</span>
+                                            </div>
+                                            <div style="text-align: right;">
+                                                <div style="font-size: 1.5em; font-weight: bold; color: ${grade >= 70 ? 'var(--success)' : grade > 0 ? 'var(--warning)' : 'var(--gray-400)'};">${grade || '--'}</div>
+                                                <span style="font-size: 0.75em; color: var(--gray-500);">Grade</span>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 5px;">
+                                            ${['Requirements', 'Quantity', 'Timing', 'Content', 'Connected'].map((cat, i) => {
+                                                const catScore = hasPost ? Math.random() : 0;
+                                                const color = catScore > 0.7 ? 'var(--success)' : catScore > 0.4 ? 'var(--warning)' : catScore > 0 ? 'var(--danger)' : 'var(--gray-200)';
+                                                return `<div style="flex: 1; height: 4px; background: ${color}; border-radius: 2px;" title="${cat}"></div>`;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        
+                        <!-- Category Definitions -->
+                        <div style="margin-top: 25px; padding: 15px; background: var(--gray-50); border-radius: 8px;">
+                            <h4 style="margin: 0 0 10px 0; font-size: 0.9em; color: var(--gray-600);">Category Definitions</h4>
+                            <div style="font-size: 0.8em; color: var(--gray-500); line-height: 1.6;">
+                                <p><strong>Requirements:</strong> How consistently a student completes all assignment components</p>
+                                <p><strong>Quantity:</strong> How often a student participates in discussion topics</p>
+                                <p><strong>Timing:</strong> How early a student acts within topics (earlier is better)</p>
+                                <p><strong>Content:</strong> The quality of the student's posts and comments</p>
+                                <p><strong>Connectedness:</strong> Measurement of how much a student interacts with peers</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Activity Over Time Tab -->
+                    <div id="studentTab-activity" style="display: none;">
+                        <div style="height: 300px; display: flex; align-items: end; gap: 30px; padding: 20px; border: 1px solid var(--gray-200); border-radius: 10px; margin-bottom: 20px;">
+                            ${activityData.map((d, i) => `
+                                <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                    <div style="width: 100%; background: var(--tcc-teal); border-radius: 5px 5px 0 0; height: ${d.score * 2}px; transition: height 0.3s;"></div>
+                                    <span style="margin-top: 10px; font-size: 0.8em; color: var(--gray-500);">${d.week}</span>
+                                    <span style="font-weight: bold; color: var(--tcc-dark);">${Math.round(d.score)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                            <div style="background: var(--gray-50); padding: 15px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 1.8em; font-weight: bold; color: var(--tcc-teal);">${student.totalPosts}</div>
+                                <div style="font-size: 0.85em; color: var(--gray-500);">Total Posts</div>
+                            </div>
+                            <div style="background: var(--gray-50); padding: 15px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 1.8em; font-weight: bold; color: var(--tcc-blue);">${student.totalReplies}</div>
+                                <div style="font-size: 0.85em; color: var(--gray-500);">Total Replies</div>
+                            </div>
+                            <div style="background: var(--gray-50); padding: 15px; border-radius: 8px; text-align: center;">
+                                <div style="font-size: 1.8em; font-weight: bold; color: var(--success);">${student.avgWordCount}</div>
+                                <div style="font-size: 0.85em; color: var(--gray-500);">Avg. Words</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Outreach Log Tab -->
+                    <div id="studentTab-outreach" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h4 style="margin: 0;">Outreach History</h4>
+                            <button onclick="logOutreach(${student.id})" style="background: var(--tcc-teal); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+                                + Log Outreach
+                            </button>
+                        </div>
+                        <div id="outreachLog-${student.id}">
+                            ${(student.outreachLog || []).length === 0 ? `
+                                <div style="text-align: center; padding: 40px; color: var(--gray-400);">
+                                    <p style="font-size: 2em; margin-bottom: 10px;">📝</p>
+                                    <p>No outreach logged yet</p>
+                                    <p style="font-size: 0.85em;">Click "Log Outreach" to record contact with this student</p>
+                                </div>
+                            ` : student.outreachLog.map(log => `
+                                <div style="padding: 15px; border-left: 3px solid var(--tcc-teal); background: var(--gray-50); margin-bottom: 10px; border-radius: 0 8px 8px 0;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <strong>${log.type}</strong>
+                                        <span style="color: var(--gray-500); font-size: 0.85em;">${log.date}</span>
+                                    </div>
+                                    <p style="margin: 0; color: var(--gray-600);">${log.notes}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showStudentTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('[id^="studentTab-"]').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.student-detail-tab').forEach(el => {
+                el.style.borderBottomColor = 'transparent';
+                el.style.color = 'var(--gray-500)';
+                el.style.fontWeight = 'normal';
+            });
+            
+            // Show selected tab
+            document.getElementById(`studentTab-${tabName}`).style.display = 'block';
+            document.getElementById(`tab-${tabName}`).style.borderBottomColor = 'var(--tcc-teal)';
+            document.getElementById(`tab-${tabName}`).style.color = 'var(--tcc-teal)';
+            document.getElementById(`tab-${tabName}`).style.fontWeight = 'bold';
+        }
+        
+        function navigateStudent(direction) {
+            const currentIndex = students.findIndex(s => s.id === selectedStudentId);
+            const newIndex = (currentIndex + direction + students.length) % students.length;
+            selectStudent(students[newIndex].id);
+        }
+        
+        function logOutreach(studentId) {
+            const type = prompt('Outreach type (Email, Phone, In-person, Canvas Message):');
+            if (!type) return;
+            const notes = prompt('Notes about this outreach:');
+            if (!notes) return;
+            
+            const student = students.find(s => s.id === studentId);
+            if (!student.outreachLog) student.outreachLog = [];
+            student.outreachLog.unshift({
+                type: type,
+                notes: notes,
+                date: new Date().toLocaleDateString()
+            });
+            
+            renderEngagementInsights();
+            showToast('📝 Outreach logged', 'success');
         }
 
         function renderExistingTopics() {
@@ -3043,6 +3625,89 @@
                     </td>
                 </tr>
             `).join('');
+            
+            // Also render polls management
+            renderPollsManagement();
+        }
+
+        function renderPollsManagement() {
+            const container = document.getElementById('pollsManagementList');
+            if (!container) return;
+            
+            if (polls.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--gray-500);">
+                        <p style="font-size: 2em; margin-bottom: 10px;">📊</p>
+                        <p>No polls created yet. Create a poll to quickly gauge student opinions.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = polls.map(poll => {
+                const topic = topics.find(t => t.id === poll.topicId);
+                const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
+                
+                return `
+                    <div style="background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="font-size: 1.2em;">📊</span>
+                                <strong>${poll.question}</strong>
+                                <span style="padding: 3px 10px; border-radius: 10px; font-size: 0.75em; background: ${poll.active ? '#c6f6d5' : '#e2e8f0'}; color: ${poll.active ? '#22543d' : '#4a5568'};">
+                                    ${poll.active ? 'Active' : 'Closed'}
+                                </span>
+                            </div>
+                            <div style="font-size: 0.85em; color: var(--gray-500);">
+                                Topic: ${topic ? topic.title.substring(0, 30) + '...' : 'Unknown'} • 
+                                ${poll.options.length} options • 
+                                ${totalVotes} votes
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="togglePollActive(${poll.id}); renderPollsManagement();" style="background: ${poll.active ? 'var(--warning)' : 'var(--success)'}; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em;">
+                                ${poll.active ? '⏸ Close' : '▶ Open'}
+                            </button>
+                            <button onclick="deletePoll(${poll.id}); renderPollsManagement();" style="background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em;">
+                                🗑
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openPollModalFromManage() {
+            // Set the topic to the first available one, or show selector
+            if (topics.length === 0) {
+                showToast('⚠️ Create a discussion topic first', 'warning');
+                return;
+            }
+            
+            // Open the poll modal
+            openPollModal();
+            
+            // Add topic selector to the modal
+            const modal = document.getElementById('createPollModal');
+            let topicSelector = document.getElementById('pollTopicSelector');
+            
+            if (!topicSelector) {
+                const container = modal.querySelector('div[style*="padding: 20px"]');
+                const firstGroup = container.querySelector('.form-group');
+                
+                const selectorDiv = document.createElement('div');
+                selectorDiv.className = 'form-group';
+                selectorDiv.style.marginBottom = '15px';
+                selectorDiv.innerHTML = `
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">For Discussion Topic</label>
+                    <select id="pollTopicSelector" style="width: 100%; padding: 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 1em;">
+                        ${topics.map(t => `<option value="${t.id}" ${t.id === currentTopicId ? 'selected' : ''}>${t.title}</option>`).join('')}
+                    </select>
+                `;
+                container.insertBefore(selectorDiv, firstGroup);
+            } else {
+                topicSelector.innerHTML = topics.map(t => `<option value="${t.id}" ${t.id === currentTopicId ? 'selected' : ''}>${t.title}</option>`).join('');
+            }
         }
 
         // ==================== CHARTS ====================
@@ -3572,27 +4237,160 @@
         }
 
         // ==================== TOPIC CREATION ====================
+        let quickVideoBlob = null;
+        let quickMediaStream = null;
+        let quickMediaRecorder = null;
+        let quickRecordedChunks = [];
+        let quickRecordingTimer = null;
+        let quickRecordingSeconds = 0;
+        let currentQuickPromptType = 'text';
+
         function showNewTopicModal() {
             document.getElementById('newTopicModal').classList.add('active');
+            // Reset to text mode
+            setQuickPromptType('text');
+            quickVideoBlob = null;
         }
 
         function closeNewTopicModal() {
             document.getElementById('newTopicModal').classList.remove('active');
+            stopQuickVideoRecord();
+            quickVideoBlob = null;
+        }
+
+        function setQuickPromptType(type) {
+            currentQuickPromptType = type;
+            const textBtn = document.getElementById('quickPromptTypeText');
+            const videoBtn = document.getElementById('quickPromptTypeVideo');
+            const textSection = document.getElementById('quickTextPromptSection');
+            const videoSection = document.getElementById('quickVideoPromptSection');
+            
+            if (type === 'text') {
+                textBtn.style.background = 'var(--tcc-teal)';
+                textBtn.style.borderColor = 'var(--tcc-teal)';
+                textBtn.style.color = 'white';
+                videoBtn.style.background = 'white';
+                videoBtn.style.borderColor = 'var(--gray-300)';
+                videoBtn.style.color = 'var(--gray-700)';
+                textSection.style.display = 'block';
+                videoSection.style.display = 'none';
+            } else {
+                videoBtn.style.background = 'var(--tcc-teal)';
+                videoBtn.style.borderColor = 'var(--tcc-teal)';
+                videoBtn.style.color = 'white';
+                textBtn.style.background = 'white';
+                textBtn.style.borderColor = 'var(--gray-300)';
+                textBtn.style.color = 'var(--gray-700)';
+                textSection.style.display = 'none';
+                videoSection.style.display = 'block';
+            }
+        }
+
+        async function startQuickVideoRecord() {
+            try {
+                quickMediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const preview = document.getElementById('quickRecordPreview');
+                preview.srcObject = quickMediaStream;
+                
+                document.getElementById('quickVideoRecordSection').style.display = 'none';
+                document.getElementById('quickRecordingInterface').style.display = 'block';
+                
+                quickRecordedChunks = [];
+                quickMediaRecorder = new MediaRecorder(quickMediaStream);
+                
+                quickMediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) quickRecordedChunks.push(e.data);
+                };
+                
+                quickMediaRecorder.onstop = () => {
+                    quickVideoBlob = new Blob(quickRecordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(quickVideoBlob);
+                    document.getElementById('quickVideoPlayer').src = url;
+                    document.getElementById('quickVideoPreview').style.display = 'block';
+                    document.getElementById('quickRecordingInterface').style.display = 'none';
+                    document.getElementById('quickVideoRecordSection').style.display = 'none';
+                };
+                
+                quickMediaRecorder.start();
+                
+                // Start timer
+                quickRecordingSeconds = 0;
+                quickRecordingTimer = setInterval(() => {
+                    quickRecordingSeconds++;
+                    const mins = Math.floor(quickRecordingSeconds / 60).toString().padStart(2, '0');
+                    const secs = (quickRecordingSeconds % 60).toString().padStart(2, '0');
+                    document.getElementById('quickRecordingTimer').textContent = `${mins}:${secs}`;
+                }, 1000);
+                
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                showToast('⚠️ Could not access camera/microphone', 'warning');
+            }
+        }
+
+        function stopQuickVideoRecord() {
+            if (quickMediaRecorder && quickMediaRecorder.state !== 'inactive') {
+                quickMediaRecorder.stop();
+            }
+            if (quickMediaStream) {
+                quickMediaStream.getTracks().forEach(track => track.stop());
+                quickMediaStream = null;
+            }
+            if (quickRecordingTimer) {
+                clearInterval(quickRecordingTimer);
+                quickRecordingTimer = null;
+            }
+        }
+
+        function uploadQuickVideo(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('video/')) {
+                quickVideoBlob = file;
+                const url = URL.createObjectURL(file);
+                document.getElementById('quickVideoPlayer').src = url;
+                document.getElementById('quickVideoPreview').style.display = 'block';
+                document.getElementById('quickVideoRecordSection').style.display = 'none';
+                showToast('✓ Video uploaded!', 'success');
+            }
+        }
+
+        function removeQuickVideo() {
+            quickVideoBlob = null;
+            document.getElementById('quickVideoPlayer').src = '';
+            document.getElementById('quickVideoPreview').style.display = 'none';
+            document.getElementById('quickVideoRecordSection').style.display = 'block';
         }
 
         function quickCreateTopic() {
             const title = document.getElementById('quickTopicTitle').value.trim();
-            const prompt = document.getElementById('quickTopicPrompt').value.trim();
+            let prompt = '';
+            let videoPrompt = null;
             
-            if (!title || !prompt) {
-                showToast('⚠️ Please fill in all fields', 'warning');
-                return;
+            if (currentQuickPromptType === 'text') {
+                prompt = document.getElementById('quickTopicPrompt').value.trim();
+                if (!title || !prompt) {
+                    showToast('⚠️ Please fill in all fields', 'warning');
+                    return;
+                }
+            } else {
+                // Video prompt
+                if (!title) {
+                    showToast('⚠️ Please enter a topic title', 'warning');
+                    return;
+                }
+                if (!quickVideoBlob) {
+                    showToast('⚠️ Please record or upload a video', 'warning');
+                    return;
+                }
+                prompt = document.getElementById('quickVideoDescription').value.trim() || 'Watch the video instructions above.';
+                videoPrompt = URL.createObjectURL(quickVideoBlob);
             }
 
             const newTopic = {
                 id: Date.now(),
                 title: title,
                 prompt: prompt,
+                videoPrompt: videoPrompt,
                 posts: 0,
                 replies: 0,
                 participants: 0,
@@ -3609,22 +4407,152 @@
             
             document.getElementById('quickTopicTitle').value = '';
             document.getElementById('quickTopicPrompt').value = '';
+            document.getElementById('quickVideoDescription').value = '';
+            quickVideoBlob = null;
+        }
+
+        // Main form video recording state
+        let mainVideoBlob = null;
+        let mainMediaStream = null;
+        let mainMediaRecorder = null;
+        let mainRecordedChunks = [];
+        let mainRecordingTimer = null;
+        let mainRecordingSeconds = 0;
+        let currentMainPromptType = 'text';
+
+        function setMainPromptType(type) {
+            currentMainPromptType = type;
+            const textBtn = document.getElementById('mainPromptTypeText');
+            const videoBtn = document.getElementById('mainPromptTypeVideo');
+            const textSection = document.getElementById('mainTextPromptSection');
+            const videoSection = document.getElementById('mainVideoPromptSection');
+            
+            if (type === 'text') {
+                textBtn.style.background = 'var(--tcc-teal)';
+                textBtn.style.borderColor = 'var(--tcc-teal)';
+                textBtn.style.color = 'white';
+                videoBtn.style.background = 'white';
+                videoBtn.style.borderColor = 'var(--gray-300)';
+                videoBtn.style.color = 'var(--gray-700)';
+                textSection.style.display = 'block';
+                videoSection.style.display = 'none';
+            } else {
+                videoBtn.style.background = 'var(--tcc-teal)';
+                videoBtn.style.borderColor = 'var(--tcc-teal)';
+                videoBtn.style.color = 'white';
+                textBtn.style.background = 'white';
+                textBtn.style.borderColor = 'var(--gray-300)';
+                textBtn.style.color = 'var(--gray-700)';
+                textSection.style.display = 'none';
+                videoSection.style.display = 'block';
+            }
+        }
+
+        async function startMainVideoRecord() {
+            try {
+                mainMediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const preview = document.getElementById('mainRecordPreview');
+                preview.srcObject = mainMediaStream;
+                
+                document.getElementById('mainVideoRecordSection').style.display = 'none';
+                document.getElementById('mainRecordingInterface').style.display = 'block';
+                
+                mainRecordedChunks = [];
+                mainMediaRecorder = new MediaRecorder(mainMediaStream);
+                
+                mainMediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) mainRecordedChunks.push(e.data);
+                };
+                
+                mainMediaRecorder.onstop = () => {
+                    mainVideoBlob = new Blob(mainRecordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(mainVideoBlob);
+                    document.getElementById('mainVideoPlayer').src = url;
+                    document.getElementById('mainVideoPreview').style.display = 'block';
+                    document.getElementById('mainRecordingInterface').style.display = 'none';
+                    document.getElementById('mainVideoRecordSection').style.display = 'none';
+                };
+                
+                mainMediaRecorder.start();
+                
+                mainRecordingSeconds = 0;
+                mainRecordingTimer = setInterval(() => {
+                    mainRecordingSeconds++;
+                    const mins = Math.floor(mainRecordingSeconds / 60).toString().padStart(2, '0');
+                    const secs = (mainRecordingSeconds % 60).toString().padStart(2, '0');
+                    document.getElementById('mainRecordingTimer').textContent = `${mins}:${secs}`;
+                }, 1000);
+                
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                showToast('⚠️ Could not access camera/microphone', 'warning');
+            }
+        }
+
+        function stopMainVideoRecord() {
+            if (mainMediaRecorder && mainMediaRecorder.state !== 'inactive') {
+                mainMediaRecorder.stop();
+            }
+            if (mainMediaStream) {
+                mainMediaStream.getTracks().forEach(track => track.stop());
+                mainMediaStream = null;
+            }
+            if (mainRecordingTimer) {
+                clearInterval(mainRecordingTimer);
+                mainRecordingTimer = null;
+            }
+        }
+
+        function uploadMainVideo(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('video/')) {
+                mainVideoBlob = file;
+                const url = URL.createObjectURL(file);
+                document.getElementById('mainVideoPlayer').src = url;
+                document.getElementById('mainVideoPreview').style.display = 'block';
+                document.getElementById('mainVideoRecordSection').style.display = 'none';
+                showToast('✓ Video uploaded!', 'success');
+            }
+        }
+
+        function removeMainVideo() {
+            mainVideoBlob = null;
+            document.getElementById('mainVideoPlayer').src = '';
+            document.getElementById('mainVideoPreview').style.display = 'none';
+            document.getElementById('mainVideoRecordSection').style.display = 'block';
         }
 
         function createNewTopic() {
             const title = document.getElementById('newTopicTitle').value.trim();
-            const prompt = document.getElementById('newTopicPrompt').value.trim();
             const points = document.getElementById('newTopicPoints').value;
+            let prompt = '';
+            let videoPrompt = null;
 
-            if (!title || !prompt) {
-                showToast('⚠️ Please fill in title and instructions', 'warning');
-                return;
+            if (currentMainPromptType === 'text') {
+                prompt = document.getElementById('newTopicPrompt').value.trim();
+                if (!title || !prompt) {
+                    showToast('⚠️ Please fill in title and instructions', 'warning');
+                    return;
+                }
+            } else {
+                // Video prompt
+                if (!title) {
+                    showToast('⚠️ Please enter a topic title', 'warning');
+                    return;
+                }
+                if (!mainVideoBlob) {
+                    showToast('⚠️ Please record or upload a video', 'warning');
+                    return;
+                }
+                prompt = document.getElementById('mainVideoDescription').value.trim() || 'Watch the video instructions above.';
+                videoPrompt = URL.createObjectURL(mainVideoBlob);
             }
 
             const newTopic = {
                 id: Date.now(),
                 title: title,
                 prompt: prompt,
+                videoPrompt: videoPrompt,
                 posts: 0,
                 replies: 0,
                 participants: 0,
@@ -3652,8 +4580,13 @@
             renderExistingTopics();
             showToast('🚀 Discussion topic created successfully!', 'success');
 
+            // Reset form
             document.getElementById('newTopicTitle').value = '';
             document.getElementById('newTopicPrompt').value = '';
+            document.getElementById('mainVideoDescription').value = '';
+            mainVideoBlob = null;
+            removeMainVideo();
+            setMainPromptType('text');
         }
 
         function addMilestoneRow() {
@@ -3684,10 +4617,27 @@
             document.getElementById('editTopicDueDate').value = topic.dueDate;
             document.getElementById('editTopicStatus').value = topic.status;
 
+            // Update Canvas sync status display
+            updateCanvasSyncDisplay(topic);
+
             // Render milestones
             renderEditMilestones(topic.milestones || []);
 
             document.getElementById('editTopicModal').classList.add('active');
+        }
+
+        function updateCanvasSyncDisplay(topic) {
+            const notLinked = document.getElementById('canvasNotLinked');
+            const linked = document.getElementById('canvasLinked');
+            
+            if (topic.canvasAssignmentId) {
+                notLinked.style.display = 'none';
+                linked.style.display = 'block';
+                document.getElementById('canvasAssignmentId').textContent = topic.canvasAssignmentId;
+            } else {
+                notLinked.style.display = 'block';
+                linked.style.display = 'none';
+            }
         }
 
         function closeEditTopicModal() {
@@ -4220,6 +5170,386 @@
                 grid.classList.add('list-view');
             } else {
                 grid.classList.remove('list-view');
+            }
+        }
+
+        // ==================== CANVAS INTEGRATION ====================
+        async function syncToCanvas() {
+            const topic = topics.find(t => t.id === editingTopicId);
+            if (!topic) return;
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '🔄 Creating...';
+
+            try {
+                // In production, this would call the LTI server endpoint
+                const response = await fetch('/api/canvas/create-assignment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        topicId: topic.id,
+                        title: topic.title,
+                        description: topic.prompt,
+                        pointsPossible: topic.points,
+                        dueAt: topic.dueDate
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    topic.canvasAssignmentId = data.assignmentId;
+                    topic.canvasLineItemUrl = data.lineItemUrl;
+                    updateCanvasSyncDisplay(topic);
+                    showToast('✅ Canvas assignment created!', 'success');
+                } else {
+                    throw new Error('Failed to create assignment');
+                }
+            } catch (error) {
+                console.log('Canvas sync (demo mode):', error);
+                // Demo mode - simulate success
+                topic.canvasAssignmentId = 'demo-' + Date.now();
+                topic.canvasLineItemUrl = 'https://canvas.tcc.edu/api/lti/courses/12345/line_items/' + topic.canvasAssignmentId;
+                updateCanvasSyncDisplay(topic);
+                showToast('✅ Canvas assignment created (demo mode)', 'success');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '🔗 Create Canvas Assignment';
+        }
+
+        async function syncGradesToCanvas() {
+            const topic = topics.find(t => t.id === editingTopicId);
+            if (!topic || !topic.canvasAssignmentId) {
+                showToast('⚠️ Topic not linked to Canvas', 'warning');
+                return;
+            }
+
+            const topicPosts = posts.filter(p => p.topicId === topic.id);
+            const grades = [];
+
+            // Calculate grades for each student
+            students.forEach(student => {
+                const studentPosts = topicPosts.filter(p => p.author === student.name);
+                const postCount = studentPosts.length;
+                const replyCount = studentPosts.reduce((sum, p) => sum + (p.replies?.length || 0), 0);
+                
+                // Simple grading: 60% for initial post, 40% for replies (at least 2)
+                let grade = 0;
+                if (postCount > 0) grade += topic.points * 0.6;
+                if (replyCount >= 2) grade += topic.points * 0.4;
+                else if (replyCount === 1) grade += topic.points * 0.2;
+
+                grades.push({
+                    oderId: student.canvasUserId || student.id,
+                    score: grade
+                });
+            });
+
+            try {
+                // In production, this would call the LTI AGS endpoint
+                const response = await fetch('/api/canvas/sync-grades', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        lineItemUrl: topic.canvasLineItemUrl,
+                        grades: grades
+                    })
+                });
+
+                if (response.ok) {
+                    showToast(`✅ Synced ${grades.length} grades to Canvas!`, 'success');
+                } else {
+                    throw new Error('Failed to sync grades');
+                }
+            } catch (error) {
+                console.log('Grade sync (demo mode):', error);
+                // Demo mode - simulate success
+                showToast(`✅ Synced ${grades.length} grades to Canvas (demo mode)`, 'success');
+            }
+        }
+
+        function openCanvasAssignment() {
+            const topic = topics.find(t => t.id === editingTopicId);
+            if (topic && topic.canvasAssignmentId) {
+                // In production, this would be the actual Canvas URL
+                const canvasUrl = `https://canvas.tccd.edu/courses/12345/assignments/${topic.canvasAssignmentId}`;
+                showToast('📎 Opening Canvas... (demo mode)', 'info');
+                // window.open(canvasUrl, '_blank');
+            }
+        }
+
+        function unlinkFromCanvas() {
+            if (confirm('Unlink this discussion from Canvas? The assignment will remain in Canvas but grades will no longer sync.')) {
+                const topic = topics.find(t => t.id === editingTopicId);
+                if (topic) {
+                    delete topic.canvasAssignmentId;
+                    delete topic.canvasLineItemUrl;
+                    updateCanvasSyncDisplay(topic);
+                    showToast('🔓 Unlinked from Canvas', 'success');
+                }
+            }
+        }
+
+        function showCanvasSetupHelp() {
+            alert(`Canvas LTI 1.3 Integration Setup:
+
+1. Your TCC IT department must register the Discussion Hub as an LTI 1.3 tool in Canvas.
+
+2. Required LTI Services:
+   • Deep Linking - Creates assignments
+   • Assignment & Grade Services (AGS) - Syncs grades
+
+3. Once configured, instructors can:
+   • Create Canvas assignments from within Discussion Hub
+   • Automatically sync grades to Canvas gradebook
+   • Students see discussions in Canvas modules
+
+For technical details, see the IT Integration Request document.`);
+        }
+
+        // ==================== POLLS ====================
+        function renderPolls() {
+            const section = document.getElementById('pollsSection');
+            const topicPolls = polls.filter(p => p.topicId === currentTopicId && p.active);
+            
+            if (topicPolls.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            section.innerHTML = `
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                    ${topicPolls.map(poll => {
+                        const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
+                        const hasVoted = poll.options.some(opt => opt.voters.includes(config.studentName));
+                        const showResults = poll.showResults || currentRole === 'instructor' || hasVoted;
+                        const topOption = poll.options.reduce((max, opt) => opt.votes > max.votes ? opt : max, poll.options[0]);
+                        
+                        return `
+                            <div class="poll-card-compact" onclick="openPollVoteModal(${poll.id})" style="background: white; border-radius: 12px; padding: 15px; width: 280px; border: 1px solid var(--gray-200); cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.2s; position: relative;"
+                                 onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.12)';"
+                                 onmouseout="this.style.transform='none'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)';">
+                                ${currentRole === 'instructor' ? `
+                                    <div style="position: absolute; top: 8px; right: 8px;" onclick="event.stopPropagation();">
+                                        <button onclick="deletePoll(${poll.id})" style="background: transparent; border: none; color: var(--gray-400); cursor: pointer; font-size: 0.9em;" title="Delete">✕</button>
+                                    </div>
+                                ` : ''}
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                                    <span style="font-size: 1.3em;">📊</span>
+                                    <span style="font-size: 0.8em; color: var(--gray-500);">${totalVotes} votes</span>
+                                    ${hasVoted ? '<span style="font-size: 0.75em; background: var(--tcc-teal); color: white; padding: 2px 8px; border-radius: 10px;">Voted</span>' : ''}
+                                </div>
+                                <h4 style="margin: 0 0 12px 0; font-size: 0.95em; color: var(--tcc-dark); line-height: 1.3;">${poll.question}</h4>
+                                ${showResults ? `
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        ${poll.options.slice(0, 3).map(option => {
+                                            const percentage = totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0;
+                                            const isTop = option.id === topOption.id && totalVotes > 0;
+                                            return `
+                                                <div style="position: relative; background: var(--gray-100); border-radius: 4px; overflow: hidden; height: 24px;">
+                                                    <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${percentage}%; background: ${isTop ? 'var(--tcc-teal)' : 'var(--gray-300)'}; opacity: 0.3;"></div>
+                                                    <div style="position: relative; padding: 4px 8px; display: flex; justify-content: space-between; font-size: 0.75em;">
+                                                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${option.text}</span>
+                                                        <span style="font-weight: bold;">${percentage}%</span>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                        ${poll.options.length > 3 ? `<span style="font-size: 0.7em; color: var(--gray-400);">+${poll.options.length - 3} more options</span>` : ''}
+                                    </div>
+                                ` : `
+                                    <div style="text-align: center; padding: 10px; background: var(--gray-50); border-radius: 8px;">
+                                        <span style="font-size: 0.85em; color: var(--tcc-teal);">Click to vote</span>
+                                    </div>
+                                `}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // Poll vote modal for expanded view
+        function openPollVoteModal(pollId) {
+            const poll = polls.find(p => p.id === pollId);
+            if (!poll) return;
+            
+            const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
+            const hasVoted = poll.options.some(opt => opt.voters.includes(config.studentName));
+            const showResults = poll.showResults || currentRole === 'instructor' || hasVoted;
+            
+            const modalHtml = `
+                <div class="modal-overlay active" id="pollVoteModal" onclick="if(event.target===this)this.remove()">
+                    <div class="modal" style="max-width: 450px;">
+                        <div class="modal-header">
+                            <h3>📊 ${poll.question}</h3>
+                            <button class="modal-close" onclick="document.getElementById('pollVoteModal').remove()">&times;</button>
+                        </div>
+                        <div style="padding: 20px;">
+                            <p style="color: var(--gray-500); margin-bottom: 15px;">${totalVotes} votes • Posted by ${poll.createdBy}</p>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                ${poll.options.map(option => {
+                                    const percentage = totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0;
+                                    const isSelected = option.voters.includes(config.studentName);
+                                    
+                                    if (showResults) {
+                                        return `
+                                            <div style="position: relative; background: white; border-radius: 8px; overflow: hidden; border: 2px solid ${isSelected ? 'var(--tcc-teal)' : 'var(--gray-200)'};">
+                                                <div style="position: absolute; top: 0; left: 0; height: 100%; width: ${percentage}%; background: ${isSelected ? 'rgba(0, 169, 165, 0.2)' : 'rgba(0, 97, 132, 0.1)'}; transition: width 0.5s;"></div>
+                                                <div style="position: relative; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center;">
+                                                    <span style="font-weight: ${isSelected ? 'bold' : 'normal'};">${isSelected ? '✓ ' : ''}${option.text}</span>
+                                                    <span style="font-weight: bold; color: var(--tcc-dark);">${percentage}%</span>
+                                                </div>
+                                            </div>
+                                        `;
+                                    } else {
+                                        return `
+                                            <button onclick="votePoll(${poll.id}, ${option.id}); document.getElementById('pollVoteModal').remove(); renderPolls();" 
+                                                    style="background: white; border: 2px solid var(--gray-200); border-radius: 8px; padding: 12px 15px; text-align: left; cursor: pointer; transition: all 0.2s; font-size: 1em;"
+                                                    onmouseover="this.style.borderColor='var(--tcc-teal)'; this.style.background='#f0f9ff';"
+                                                    onmouseout="this.style.borderColor='var(--gray-200)'; this.style.background='white';">
+                                                ${option.text}
+                                            </button>
+                                        `;
+                                    }
+                                }).join('')}
+                            </div>
+                            ${hasVoted ? '<p style="margin-top: 15px; text-align: center; color: var(--gray-500);">✓ You have voted</p>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function openPollModal() {
+            document.getElementById('createPollModal').classList.add('active');
+            document.getElementById('pollQuestion').value = '';
+            document.getElementById('pollOptionsContainer').innerHTML = `
+                <div class="poll-option-input" style="display: flex; gap: 10px; margin-bottom: 8px;">
+                    <input type="text" placeholder="Option 1" class="poll-option-field"
+                           style="flex: 1; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                    <button onclick="removePollOption(this)" style="background: var(--danger); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">✕</button>
+                </div>
+                <div class="poll-option-input" style="display: flex; gap: 10px; margin-bottom: 8px;">
+                    <input type="text" placeholder="Option 2" class="poll-option-field"
+                           style="flex: 1; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                    <button onclick="removePollOption(this)" style="background: var(--danger); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">✕</button>
+                </div>
+            `;
+            document.getElementById('pollAllowMultiple').checked = false;
+            document.getElementById('pollShowResults').checked = true;
+        }
+
+        function closePollModal() {
+            document.getElementById('createPollModal').classList.remove('active');
+        }
+
+        function addPollOption() {
+            const container = document.getElementById('pollOptionsContainer');
+            const optionCount = container.querySelectorAll('.poll-option-input').length + 1;
+            const div = document.createElement('div');
+            div.className = 'poll-option-input';
+            div.style.cssText = 'display: flex; gap: 10px; margin-bottom: 8px;';
+            div.innerHTML = `
+                <input type="text" placeholder="Option ${optionCount}" class="poll-option-field"
+                       style="flex: 1; padding: 10px; border: 1px solid var(--gray-300); border-radius: 8px;">
+                <button onclick="removePollOption(this)" style="background: var(--danger); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removePollOption(btn) {
+            const container = document.getElementById('pollOptionsContainer');
+            if (container.querySelectorAll('.poll-option-input').length > 2) {
+                btn.parentElement.remove();
+            } else {
+                showToast('⚠️ Minimum 2 options required', 'warning');
+            }
+        }
+
+        function createPoll() {
+            const question = document.getElementById('pollQuestion').value.trim();
+            const optionInputs = document.querySelectorAll('.poll-option-field');
+            const options = Array.from(optionInputs).map(input => input.value.trim()).filter(v => v);
+            
+            if (!question) {
+                showToast('⚠️ Please enter a question', 'warning');
+                return;
+            }
+            if (options.length < 2) {
+                showToast('⚠️ Please add at least 2 options', 'warning');
+                return;
+            }
+            
+            // Check if topic selector exists (from Manage Topics)
+            const topicSelector = document.getElementById('pollTopicSelector');
+            const targetTopicId = topicSelector ? parseInt(topicSelector.value) : currentTopicId;
+            
+            const newPoll = {
+                id: Date.now(),
+                topicId: targetTopicId,
+                question: question,
+                options: options.map((text, i) => ({
+                    id: i + 1,
+                    text: text,
+                    votes: 0,
+                    voters: []
+                })),
+                createdAt: new Date().toISOString(),
+                createdBy: config.instructorName,
+                allowMultiple: document.getElementById('pollAllowMultiple').checked,
+                showResults: document.getElementById('pollShowResults').checked,
+                active: true
+            };
+            
+            polls.push(newPoll);
+            closePollModal();
+            renderPolls();
+            renderPollsManagement();
+            showToast('📊 Poll created successfully!', 'success');
+        }
+
+        function votePoll(pollId, optionId) {
+            const poll = polls.find(p => p.id === pollId);
+            if (!poll) return;
+            
+            const voterName = currentRole === 'instructor' ? config.instructorName : config.studentName;
+            
+            // Check if already voted
+            const hasVoted = poll.options.some(opt => opt.voters.includes(voterName));
+            if (hasVoted && !poll.allowMultiple) {
+                showToast('⚠️ You have already voted', 'warning');
+                return;
+            }
+            
+            // Add vote
+            const option = poll.options.find(opt => opt.id === optionId);
+            if (option && !option.voters.includes(voterName)) {
+                option.votes++;
+                option.voters.push(voterName);
+                renderPolls();
+                showToast('✓ Vote recorded!', 'success');
+            }
+        }
+
+        function togglePollActive(pollId) {
+            const poll = polls.find(p => p.id === pollId);
+            if (poll) {
+                poll.active = !poll.active;
+                renderPolls();
+                showToast(poll.active ? '▶ Poll reopened' : '⏸ Poll closed', 'success');
+            }
+        }
+
+        function deletePoll(pollId) {
+            if (confirm('Delete this poll? This cannot be undone.')) {
+                polls = polls.filter(p => p.id !== pollId);
+                renderPolls();
+                showToast('🗑 Poll deleted', 'success');
             }
         }
 

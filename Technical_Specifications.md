@@ -545,6 +545,219 @@ The Discussion Hub includes a comprehensive built-in academic integrity checker 
 
 ---
 
+## 5.4 Canvas Assignment Integration
+
+The Discussion Hub integrates with Canvas via LTI 1.3 Assignment & Grade Services (AGS) to create assignments and sync grades.
+
+### Creating Canvas Assignments
+
+When an instructor clicks "Create Canvas Assignment" in the topic editor:
+
+1. **Deep Linking Request** — Tool sends assignment details to Canvas
+2. **Line Item Creation** — Canvas creates a gradebook column
+3. **Resource Link** — Discussion topic linked to Canvas assignment
+4. **Student Access** — Students see discussion in Canvas modules/assignments
+
+### Grade Passback Flow
+
+```
+Discussion Hub                    Canvas LMS
+     │                                │
+     │  1. Calculate student grades   │
+     │                                │
+     │  2. POST /scores               │
+     │ ─────────────────────────────► │
+     │    (LTI AGS Score Service)     │
+     │                                │
+     │  3. Grades appear in           │
+     │     Canvas gradebook           │
+     │                                │
+```
+
+### Required LTI Services
+
+| Service | Scope | Purpose |
+|---------|-------|---------|
+| Line Items | `lineitem` | Create/manage assignments |
+| Scores | `score` | Submit grades to gradebook |
+| Results | `result` | Read existing grades (optional) |
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/canvas/create-assignment` | POST | Create Canvas assignment from topic |
+| `/api/canvas/sync-grades` | POST | Send grades to Canvas gradebook |
+
+### Grade Calculation
+
+Default auto-grading formula:
+- **Initial Post (40%)** — Based on word count meeting minimum
+- **Peer Replies (40%)** — Requires 2 substantive replies
+- **Engagement (20%)** — Bonus for exceeding requirements
+
+Instructors can manually adjust grades before syncing to Canvas.
+
+---
+
+## 5.5 Polling System
+
+Instructors can create quick polls to gauge student understanding or opinions.
+
+### Poll Features
+
+| Feature | Description |
+|---------|-------------|
+| **Compact Card Display** | Polls appear as small, clickable cards showing question, vote count, and mini progress bars |
+| **Click to Expand** | Full voting modal opens when card is clicked |
+| **Multiple Choice** | Support for 2+ options per poll |
+| **Allow Multiple** | Optional setting to let students select multiple options |
+| **Show/Hide Results** | Control whether students see results before voting |
+| **Topic Association** | Each poll is linked to a specific discussion topic |
+
+### Poll Management (Instructor)
+
+Located in **Manage Topics** tab:
+- View all polls across topics
+- Create new polls with topic selector
+- Open/close polls
+- Delete polls
+- See vote counts per poll
+
+### Data Structure
+
+```javascript
+{
+    id: Number,
+    topicId: Number,
+    question: String,
+    options: [{ id, text, votes, voters[] }],
+    createdAt: DateTime,
+    createdBy: String,
+    allowMultiple: Boolean,
+    showResults: Boolean,
+    active: Boolean
+}
+```
+
+---
+
+## 5.6 Video Prompt Instructions
+
+Instructors can record or upload video instructions instead of text prompts.
+
+### Creating Video Prompts
+
+Available in both:
+1. **Quick Create Modal** (+ New button)
+2. **Manage Topics** tab full form
+
+### Options
+
+| Method | Description |
+|--------|-------------|
+| **🎥 Record Video** | Use webcam to record live instructions |
+| **📁 Upload Video** | Upload existing video file |
+
+### Recording Interface
+
+- Live preview while recording
+- Timer display (MM:SS)
+- Stop button to end recording
+- Preview before saving
+- Remove/re-record option
+
+### Display
+
+When students view the discussion:
+- Video appears prominently at top with dark cinema-style frame
+- Full playback controls
+- Text summary below for accessibility
+
+### Technical Notes
+
+- Format: WebM (recorded) or uploaded format
+- Storage: Blob URLs in demo mode; server storage in production
+- Accessibility: Text summary required/recommended
+
+---
+
+## 5.7 Engagement Insights Dashboard
+
+The **Engagement Insights** tab provides Harmonize-style student analytics.
+
+### Layout
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Left Sidebar (280px)    │    Right Panel (flex)           │
+├──────────────────────────┼──────────────────────────────────┤
+│  🔍 Search Students      │                                  │
+│  ─────────────────────   │    Student Detail View           │
+│  ⚠️ Outreach Suggestions │    - Header with navigation      │
+│  - High risk students    │    - Tabs: Topics | Activity |   │
+│  - "NEW" badges          │            Outreach              │
+│  ─────────────────────   │    - Performance cards           │
+│  All Students (30)       │    - Activity charts             │
+│  - Click to select       │    - Outreach log                │
+│  - Status indicators     │                                  │
+└──────────────────────────┴──────────────────────────────────┘
+```
+
+### Student Status Levels
+
+| Status | Score | Color | Description |
+|--------|-------|-------|-------------|
+| **High** | 80+ | Green | Exceeding expectations |
+| **Medium** | 50-79 | Yellow | Meeting basic requirements |
+| **Low** | 1-49 | Red | Needs attention |
+| **No Activity** | 0 | Gray | No participation yet |
+
+### Engagement Score Calculation
+
+```javascript
+let score = 0;
+if (totalPosts > 0) score += 40;           // Has initial post
+if (totalReplies >= 2) score += 30;        // Met reply requirement
+else if (totalReplies >= 1) score += 15;   // Partial credit
+if (avgWordCount >= 200) score += 20;      // Quality posts
+else if (avgWordCount >= 100) score += 10; // Partial credit
+score += Math.min(10, totalPosts * 2);     // Bonus for extra posts
+```
+
+### Student Detail Tabs
+
+#### Active Topics Tab
+- Performance cards for each discussion
+- 5-category breakdown bars:
+  - **Requirements** — Completes all assignment components
+  - **Quantity** — Frequency of participation
+  - **Timing** — Submits early vs. last minute
+  - **Content** — Quality of posts and comments
+  - **Connectedness** — Interaction with peers
+- Grade display per topic
+- Click to navigate to topic
+
+#### Activity Over Time Tab
+- Bar chart showing weekly engagement
+- Stats cards: Total Posts, Total Replies, Avg. Words
+
+#### Outreach Log Tab
+- Record contact with students
+- Log types: Email, Phone, In-person, Canvas Message
+- Timestamped history
+- Notes field for each contact
+
+### Outreach Suggestions
+
+Students flagged for outreach when:
+- Engagement score < 50
+- Last activity not "Today"
+
+Displayed with red highlighting and "NEW" badge.
+
+---
+
 ## 6. Security Specifications
 
 ### 6.1 Authentication & Authorization

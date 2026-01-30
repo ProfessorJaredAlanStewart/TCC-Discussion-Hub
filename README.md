@@ -1,269 +1,167 @@
-# 💬 TCC Discussion Hub
+# TCC Discussion Hub
 
-<div align="center">
+A Canvas LTI-integrated discussion board designed to enhance student engagement in online courses at Tarrant County College.
 
-![TCC Blue](https://img.shields.io/badge/TCC-Discussion%20Hub-006184?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge)
+## Features
 
-**A modern, multimedia-rich discussion board platform built for Tarrant County College**
+### Core Discussion Features
+- 🎥 **Video & Audio Responses** — Students can record multimedia directly in the browser
+- 📊 **Multiple Milestones** — Separate due dates for initial posts, peer responses, and reflections
+- 📈 **Auto-Grading** — Automatic participation tracking with Canvas grade sync
+- 💬 **Modern Interface** — Social media-style card layout that increases engagement
+- 🔐 **Canvas Integration** — Single sign-on via LTI 1.3, no separate accounts needed
 
-[🚀 Live Demo](https://professorjaredalanstewart.github.io/TCC-Discussion-Hub/tcc_discussion_hub_final.html) • [📖 Documentation](#documentation) • [⚙️ Installation](#installation)
+### Instructor Tools
+- 🎬 **Video Prompts** — Record or upload video instructions for discussion topics
+- 📊 **Quick Polls** — Create compact poll cards to gauge student understanding
+- 📈 **Engagement Insights** — Harmonize-style analytics dashboard with:
+  - Outreach suggestions for at-risk students
+  - Activity over time tracking
+  - 5-category performance metrics (Requirements, Quantity, Timing, Content, Connectedness)
+  - Outreach logging system
+- 🔍 **Academic Integrity Checker** — 19 detection methods + web plagiarism search
+- 📤 **Canvas Assignment Sync** — Create gradebook assignments and sync grades
 
-</div>
+### Student Experience
+- 📝 **Rich Text Editor** — Format posts with ease
+- 🎤 **Media Recording** — Built-in video/audio recording
+- 😀 **Reactions** — Like and "Insightful" reactions on posts
+- 📅 **Milestone Tracking** — Visual progress toward deadlines
+- 🗳️ **Poll Voting** — Quick polls with instant results
 
----
-
-## ✨ Features
-
-### For Students
-| Feature | Description |
-|---------|-------------|
-| 📝 **Rich Text Posts** | Create thoughtful responses with word count tracking |
-| 🎥 **Video Responses** | Record and embed video directly in posts |
-| 🎤 **Audio Responses** | Record voice responses for accessibility |
-| 📎 **File Attachments** | Upload images, documents, and media |
-| 💬 **Threaded Replies** | Engage in meaningful peer discussions |
-| 👍 **Reactions** | Like and mark posts as "Insightful" |
-| 📊 **Progress Tracking** | Visual milestone completion status |
-| ✏️ **Edit Posts** | Revise your work with full edit history |
-
-### For Instructors
-| Feature | Description |
-|---------|-------------|
-| ⚙️ **Easy Setup** | Configure your profile, photo, and course details |
-| 📚 **Topic Management** | Create multi-milestone discussion assignments |
-| 📈 **Analytics Dashboard** | Real-time participation and engagement metrics |
-| 👥 **Student Progress** | Track individual student completion and grades |
-| 🤖 **Auto-Grading** | Configurable automatic grade calculation |
-| 🔍 **AI/Plagiarism Check** | Built-in academic integrity analysis for every post |
-| 📜 **Edit History** | View complete revision history for any post |
-| 📥 **Grade Export** | Export grades to CSV for Canvas import |
-| 🔔 **Notifications** | Deadline reminders and at-risk student alerts |
-
----
-
-## 🔍 Academic Integrity Checker
-
-A comprehensive built-in tool to help instructors identify potentially problematic submissions.
-
-### Detection Methods (19 Total)
-| Category | Checks | Description |
-|----------|--------|-------------|
-| **AI Writing** | Sentence uniformity, AI phrases, paragraph structure, hedging language, transition overuse, formal style | Detects patterns typical of AI-generated content |
-| **Copied Content** | Repeated phrases, known lyrics, poetic structure, rhetorical questions | Catches song lyrics, poems, and copy-pasted content |
-| **Academic Standards** | Analytical language, personal voice, topic relevance, citations | Ensures submissions meet discussion expectations |
-| **Plagiarism** | Same-class similarity, self-plagiarism, essay mill indicators | Compares against other posts and detects purchased content |
-| **Writing Quality** | Lexical diversity, vocabulary sophistication, list usage | Analyzes writing characteristics |
-
-### Features
-- **🔍 One-Click Analysis** - Check any post instantly with 19 heuristic checks
-- **📊 Batch Processing** - "Check All Posts" analyzes entire discussion
-- **🎯 Risk Scoring** - Posts rated as Clear (✓), Review (⚡), or Flagged (⚠️)
-- **🌐 Web Plagiarism Check** - Search the internet for copied content (Wikipedia, articles, etc.)
-- **📄 Export Reports** - Download individual or summary reports
-- **🔬 Deep Analysis** - Optional Claude API integration for AI-powered analysis
-- **📈 Metrics Dashboard** - View detailed stats like lexical diversity, topic relevance
-
-### Risk Levels
-| Level | Score | Action |
-|-------|-------|--------|
-| ✅ Low Risk | <35% | No action needed |
-| ⚠️ Medium Risk | 35-60% | Review recommended |
-| 🚨 High Risk | >60% | Review required |
-
-> ⚠️ **Important:** This tool uses heuristics and is not definitive. Always use professional judgment and speak with students before making academic integrity decisions.
-
----
-
-## 🖼️ Screenshots
-
-<details>
-<summary><b>Click to view screenshots</b></summary>
-
-### Student View
-- Clean, card-based discussion interface
-- Visual progress tracking for milestones
-- Multimedia post creation with video/audio recording
-
-### Instructor Dashboard
-- Analytics with participation charts
-- Student progress table with auto-grades
-- Topic management with milestone configuration
-- Profile and course setup
-
-</details>
-
----
-
-## 🚀 Quick Start
-
-### Option 1: Standalone HTML (No Server Required)
-Simply open `tcc_discussion_hub_final.html` in any modern web browser. Perfect for:
-- Demonstrations and previews
-- Evaluating features
-- Local testing
-
-### Option 2: Canvas LTI Integration (Recommended for Production)
-See the [LTI Installation Guide](#canvas-lti-integration) below for full institutional deployment.
-
----
-
-## 📁 Repository Contents
+## Project Structure
 
 ```
-TCC-Discussion-Hub/
-├── tcc_discussion_hub_final.html    # 🌐 Standalone demo (open in browser)
-├── tcc_discussion_hub_lti_package.zip   # 📦 Full LTI server package
-├── Canvas_LTI_Setup_Guide.md        # 📖 Canvas admin instructions
-├── IT_Integration_Request.md        # 📋 IT department documentation
-├── Technical_Specifications.md      # 🔧 Full technical specs
-└── TCC_Discussion_Hub_IT_Request.docx   # 📄 Formal IT request document
+tcc-discussion-hub/
+├── docs/
+│   ├── IT_Integration_Request.md    # Submit to IT department
+│   ├── Technical_Specifications.md   # Detailed tech specs for IT
+│   └── Canvas_LTI_Setup_Guide.md     # Canvas admin instructions
+├── src/
+│   ├── server.js                     # Main application server
+│   ├── migrate.js                    # Database migration script
+│   └── public/
+│       └── index.html                # Frontend application
+├── .env.example                      # Environment template
+├── package.json                      # Node.js dependencies
+└── README.md                         # This file
 ```
 
----
+## Quick Start (Development)
 
-## ⚙️ Installation
-
-### Standalone Demo
-```bash
-# Clone the repository
-git clone https://github.com/ProfessorJaredAlanStewart/TCC-Discussion-Hub.git
-
-# Open the HTML file
-open tcc_discussion_hub_final.html
-# Or on Windows:
-start tcc_discussion_hub_final.html
-```
-
-### Canvas LTI Integration
-
-<details>
-<summary><b>Full LTI Installation Instructions</b></summary>
-
-#### Prerequisites
-- Ubuntu 22.04+ server
+### Prerequisites
 - Node.js 18+
 - PostgreSQL 14+
-- Nginx
-- SSL certificate
-- Canvas Admin access
 
-#### Server Setup
+### Setup
+
+1. Clone the repository:
 ```bash
-# Extract the LTI package
-unzip tcc_discussion_hub_lti_package.zip
-cd lti_project
+git clone https://github.com/tccd/discussion-hub.git
+cd discussion-hub
+```
 
-# Install dependencies
+2. Install dependencies:
+```bash
 npm install
+```
 
-# Configure environment
+3. Create environment file:
+```bash
 cp .env.example .env
-nano .env  # Edit with your settings
+# Edit .env with your database credentials
+```
 
-# Run database migrations
+4. Run database migrations:
+```bash
 npm run migrate
-
-# Start the server
-npm start
 ```
 
-#### Canvas Configuration
-1. Go to Canvas Admin → Developer Keys
-2. Create new LTI Key with settings from `Canvas_LTI_Setup_Guide.md`
-3. Deploy to courses via External Tools
-
-See `IT_Integration_Request.md` for complete IT department documentation.
-
-</details>
-
----
-
-## 📖 Documentation
-
-| Document | Description |
-|----------|-------------|
-| [Canvas LTI Setup Guide](Canvas_LTI_Setup_Guide.md) | Step-by-step Canvas admin instructions |
-| [IT Integration Request](IT_Integration_Request.md) | Complete IT department documentation |
-| [Technical Specifications](Technical_Specifications.md) | Full technical architecture and API docs |
-
----
-
-## 💰 Cost Comparison
-
-| Solution | Annual Cost | Notes |
-|----------|-------------|-------|
-| **TCC Discussion Hub** | **$0** | Self-hosted on existing infrastructure |
-| Harmonize | $5,000 - $10,000 | Per-institution licensing |
-| Yellowdig | $8,000 - $15,000 | Per-institution licensing |
-| Packback | $10,000+ | Per-institution licensing |
-
-**Potential savings: $5,000 - $15,000+ annually**
-
----
-
-## 🛠️ Technology Stack
-
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript, Chart.js
-- **Backend** (LTI): Node.js, Express, PostgreSQL
-- **Authentication**: LTI 1.3 / OIDC via Canvas
-- **Media**: WebRTC for video/audio recording
-- **Styling**: Custom CSS with TCC brand colors
-
----
-
-## 🎨 Customization
-
-### Instructor Setup (Built-in)
-1. Switch to **Instructor View**
-2. Click **⚙️ Settings** tab
-3. Enter your name, title, and upload profile photo
-4. Configure course name, section, and semester
-5. Click **Save** — settings persist automatically!
-
-### Brand Customization (Code)
-Edit CSS variables in the `<style>` section:
-```css
-:root {
-    --tcc-blue: #006184;      /* Primary brand color */
-    --tcc-teal: #00a9a5;      /* Secondary brand color */
-    --tcc-mint: #e8f6f5;      /* Light accent */
-}
+5. Start the development server:
+```bash
+npm run dev
 ```
 
----
+6. For LTI testing, you'll need:
+   - HTTPS (use ngrok or similar for local development)
+   - Canvas Developer Key configured to point to your tunnel URL
 
-## 🤝 Contributing
+## Deployment
 
-Contributions are welcome! This project was developed for Tarrant County College but can be adapted for any institution.
+See `docs/Technical_Specifications.md` for complete deployment instructions.
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Quick Deploy Steps
 
----
+1. **Server Setup**
+   - Ubuntu 22.04+ or RHEL 8+
+   - Node.js 18 LTS
+   - PostgreSQL 14+
+   - Nginx (reverse proxy)
+   - SSL certificate
 
-## 📜 License
+2. **Application**
+   ```bash
+   # Copy files to server
+   scp -r . user@server:/var/www/discussionhub/
+   
+   # On server
+   cd /var/www/discussionhub
+   npm install --production
+   cp .env.example .env
+   # Edit .env with production values
+   npm run migrate
+   pm2 start src/server.js --name discussionhub
+   ```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+3. **Canvas Configuration**
+   - Create LTI Developer Key (see `docs/Canvas_LTI_Setup_Guide.md`)
+   - Add Client ID to `.env`
+   - Enable tool in courses
 
----
+## Documentation
 
-## 👏 Acknowledgments
+| Document | Audience | Purpose |
+|----------|----------|---------|
+| [IT Integration Request](docs/IT_Integration_Request.md) | IT Leadership | Project overview, business case |
+| [Technical Specifications](docs/Technical_Specifications.md) | IT Infrastructure | Server setup, security, maintenance |
+| [Canvas LTI Setup Guide](docs/Canvas_LTI_Setup_Guide.md) | Canvas Admin | LTI configuration steps |
 
-- **Tarrant County College** - Institutional support and requirements
-- **TCC Social Sciences Division** - Feature feedback and testing
-- Built with ❤️ for better student engagement
+## API Reference
 
----
+### Authentication
+All API endpoints require a valid LTI session (established via Canvas launch).
 
-<div align="center">
+### Endpoints
 
-**[⬆ Back to Top](#-tcc-discussion-hub)**
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/user` | Current user info |
+| GET | `/api/topics` | List discussion topics |
+| GET | `/api/topics/:id` | Get topic with milestones |
+| POST | `/api/topics` | Create topic (instructor) |
+| GET | `/api/topics/:id/posts` | Get posts for topic |
+| POST | `/api/topics/:id/posts` | Create new post |
+| POST | `/api/posts/:id/reactions` | Toggle like/insightful |
+| GET | `/api/topics/:id/grades` | Student grades (instructor) |
 
-Made for 🎓 **Tarrant County College**
+## Security
 
-</div>
+- **Authentication**: Canvas LTI 1.3 (no local passwords)
+- **Authorization**: Role-based (student/instructor from Canvas)
+- **Data**: All student data stays on TCC infrastructure
+- **Encryption**: TLS 1.3 required, database encryption optional
+- **Compliance**: FERPA-ready design
+
+## Contributing
+
+This is an internal TCC project. Contact the Social Sciences Department for access.
+
+## License
+
+MIT License - See LICENSE file
+
+## Support
+
+**Project Lead**: [Department Chair]
+**Department**: Social Sciences
+**Email**: [email]
